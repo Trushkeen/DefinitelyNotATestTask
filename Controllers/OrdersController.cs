@@ -13,8 +13,12 @@ namespace DefinetelyNotATestTask.Controllers
     public class OrdersController
     {
         //using static just for this case
-        public static List<Order> Orders = new List<Order>();
+        public static List<Order> Orders { get; set; } = new List<Order>();
 
+        /// <summary>
+        /// Get all orders 
+        /// </summary>
+        /// <returns>All orders</returns>
         [HttpGet]
         [Route("GetAll")]
         public IEnumerable<Order> GetAllOrders()
@@ -22,6 +26,11 @@ namespace DefinetelyNotATestTask.Controllers
             return Orders;
         }
 
+        /// <summary>
+        /// Create order
+        /// </summary>
+        /// <param name="orderVM">Order model</param>
+        /// <returns></returns>
         [HttpPost]
         [Route("Create")]
         [ProducesResponseType(200)]
@@ -52,6 +61,11 @@ namespace DefinetelyNotATestTask.Controllers
             return new OkResult();
         }
 
+        /// <summary>
+        /// Edit order
+        /// </summary>
+        /// <param name="editOrderVM">Order model</param>
+        /// <returns></returns>
         [HttpPost]
         [Route("Edit")]
         [ProducesResponseType(200)]
@@ -71,6 +85,11 @@ namespace DefinetelyNotATestTask.Controllers
             else return new NotFoundResult();
         }
 
+        /// <summary>
+        /// Get order by ID
+        /// </summary>
+        /// <param name="id">Order's ID</param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
@@ -84,6 +103,11 @@ namespace DefinetelyNotATestTask.Controllers
             return order;
         }
 
+        /// <summary>
+        /// Sets order's status to "Canceled"
+        /// </summary>
+        /// <param name="id">Order's ID</param>
+        /// <returns></returns>
         [HttpPost]
         [Route("Delete")]
         [ProducesResponseType(200)]
