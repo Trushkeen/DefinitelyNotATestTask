@@ -29,29 +29,29 @@ namespace DefinetelyNotATestTask.Controllers
         /// <summary>
         /// Create order
         /// </summary>
-        /// <param name="orderVM">Order model</param>
+        /// <param name="model">Order model</param>
         /// <returns></returns>
         [HttpPost]
         [Route("Create")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public StatusCodeResult CreateOrder(OrderVM orderVM)
+        public StatusCodeResult CreateOrder(OrderVM model)
         {
             try
             {
-                if (orderVM.Content.Length > 10)
+                if (model.Content.Length > 10)
                 {
                     throw new ArgumentException("Exceeded content's count");
                 }
                 Orders.Add(new Order()
                 {
-                    Id = orderVM.Id,
-                    Status = orderVM.Status,
-                    Cost = orderVM.Cost.Value,
-                    Content = orderVM.Content,
-                    ReceiverPhone = orderVM.ReceiverPhone,
-                    ReceiverFullName = orderVM.ReceiverFullName,
-                    PostMachineId = orderVM.PostMachineId
+                    Id = model.Id,
+                    Status = model.Status,
+                    Cost = model.Cost.Value,
+                    Content = model.Content,
+                    ReceiverPhone = model.ReceiverPhone,
+                    ReceiverFullName = model.ReceiverFullName,
+                    PostMachineId = model.PostMachineId
                 });
             }
             catch (Exception)
@@ -64,22 +64,22 @@ namespace DefinetelyNotATestTask.Controllers
         /// <summary>
         /// Edit order
         /// </summary>
-        /// <param name="editOrderVM">Order model</param>
+        /// <param name="model">Order model</param>
         /// <returns></returns>
         [HttpPost]
         [Route("Edit")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public StatusCodeResult EditOrder(OrderVM editOrderVM)
+        public StatusCodeResult EditOrder(OrderVM model)
         {
-            var order = Orders.Where((c) => c.Id == editOrderVM.Id).FirstOrDefault();
+            var order = Orders.Where((c) => c.Id == model.Id).FirstOrDefault();
             if (order != null)
             {
-                if (editOrderVM.Status != 0) order.Status = editOrderVM.Status;
-                if (editOrderVM.Content != null) order.Content = editOrderVM.Content;
-                if (editOrderVM.Cost != null) order.Cost = editOrderVM.Cost.Value;
-                if (editOrderVM.ReceiverFullName != null) order.ReceiverFullName = editOrderVM.ReceiverFullName;
-                if (editOrderVM.ReceiverPhone != null) order.ReceiverPhone = editOrderVM.ReceiverPhone;
+                if (model.Status != 0) order.Status = model.Status;
+                if (model.Content != null) order.Content = model.Content;
+                if (model.Cost != null) order.Cost = model.Cost.Value;
+                if (model.ReceiverFullName != null) order.ReceiverFullName = model.ReceiverFullName;
+                if (model.ReceiverPhone != null) order.ReceiverPhone = model.ReceiverPhone;
                 return new OkResult();
             }
             else return new NotFoundResult();
