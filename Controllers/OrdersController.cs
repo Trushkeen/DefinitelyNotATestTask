@@ -35,7 +35,9 @@ namespace DefinetelyNotATestTask.Controllers
         [Route("Create")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public StatusCodeResult CreateOrder(OrderVM model)
+        [ProducesResponseType(403)]
+        [ProducesResponseType(404)]
+        public ActionResult CreateOrder(OrderVM model)
         {
             try
             {
@@ -43,7 +45,13 @@ namespace DefinetelyNotATestTask.Controllers
                 {
                     throw new ArgumentException("Exceeded content's count");
                 }
-                Orders.Add(new Order()
+
+                if (Orders.Where((c) => c.Id == model.Id).FirstOrDefault() != null)
+                {
+                    return new ForbidResult();
+                }
+
+                var order = new Order()
                 {
                     Id = model.Id,
                     Status = model.Status,
@@ -52,7 +60,20 @@ namespace DefinetelyNotATestTask.Controllers
                     ReceiverPhone = model.ReceiverPhone,
                     ReceiverFullName = model.ReceiverFullName,
                     PostMachineId = model.PostMachineId
-                });
+                };
+
+                var machine = PostMachinesController.PostMachines.Where((c) => c.Id == order.Id).FirstOrDefault();
+                if (machine == null)
+                {
+                    return new NotFoundResult();
+                }
+
+                if (!machine.IsWorking)
+                {
+                    return new ForbidResult();
+                }
+
+                Orders.Add(order);
             }
             catch (Exception)
             {
@@ -70,7 +91,7 @@ namespace DefinetelyNotATestTask.Controllers
         [Route("Edit")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public StatusCodeResult EditOrder(OrderVM model)
+        public ActionResult EditOrder(OrderVM model)
         {
             var order = Orders.Where((c) => c.Id == model.Id).FirstOrDefault();
             if (order != null)
@@ -112,7 +133,7 @@ namespace DefinetelyNotATestTask.Controllers
         [Route("Delete")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public StatusCodeResult CancelOrder(int id)
+        public ActionResult CancelOrder(int id)
         {
             var order = Orders.Where((c) => c.Id == id).FirstOrDefault();
             if (order != null)

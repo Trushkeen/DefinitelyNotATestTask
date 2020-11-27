@@ -13,8 +13,13 @@ namespace DefinetelyNotATestTask.Controllers
     public class PostMachinesController
     {
         //using static just for this case
+        //mutable list used for debugging
         public static List<PostMachine> PostMachines { get; set; } = new List<PostMachine>();
 
+        /// <summary>
+        /// Gets all post machines
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("GetAll")]
         public IEnumerable<PostMachine> GetAllPostMachines()
@@ -22,6 +27,11 @@ namespace DefinetelyNotATestTask.Controllers
             return PostMachines;
         }
 
+        /// <summary>
+        /// Get post machine by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
@@ -38,7 +48,7 @@ namespace DefinetelyNotATestTask.Controllers
 #if DEBUG
         [HttpPost]
         [Route("Create")]
-        public StatusCodeResult CreatePostMachine(PostMachineVM model)
+        public ActionResult CreatePostMachine(PostMachineVM model)
         {
             try
             {
@@ -58,7 +68,7 @@ namespace DefinetelyNotATestTask.Controllers
 
         [HttpDelete]
         [Route("Remove/{id}")]
-        public StatusCodeResult DeletePostMachine(int id)
+        public ActionResult DeletePostMachine(int id)
         {
             try
             {
