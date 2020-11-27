@@ -35,5 +35,7 @@ namespace DefinetelyNotATestTask.Models
             }
         }
         public string ReceiverFullName { get; set; }
+
+        
     }
 }

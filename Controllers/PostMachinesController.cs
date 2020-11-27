@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DefinetelyNotATestTask.ViewModels
+namespace DefinetelyNotATestTask.Controllers
 {
-    public class GetOrderInfoVM
+    public class PostMachinesController
     {
     }
 }

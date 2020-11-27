@@ -7,6 +7,7 @@ namespace DefinetelyNotATestTask.Models
 {
     public enum OrderStatus
     {
+        Undefined = 0,
         Registered = 1,
         AtWarehouse = 2,
         TakenByCourier = 3,
