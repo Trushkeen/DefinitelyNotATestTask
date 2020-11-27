@@ -48,7 +48,7 @@ namespace DefinetelyNotATestTask.Controllers
 
                 if (Orders.Where((c) => c.Id == model.Id).FirstOrDefault() != null)
                 {
-                    return new ForbidResult();
+                    throw new Exception("Same ID already exists");
                 }
 
                 var order = new Order()
@@ -62,7 +62,7 @@ namespace DefinetelyNotATestTask.Controllers
                     PostMachineId = model.PostMachineId
                 };
 
-                var machine = PostMachinesController.PostMachines.Where((c) => c.Id == order.Id).FirstOrDefault();
+                var machine = PostMachinesController.PostMachines.Where((c) => c.Id == order.PostMachineId).FirstOrDefault();
                 if (machine == null)
                 {
                     return new NotFoundResult();
@@ -70,7 +70,7 @@ namespace DefinetelyNotATestTask.Controllers
 
                 if (!machine.IsWorking)
                 {
-                    return new ForbidResult();
+                    throw new Exception("Post machine isn't working now");
                 }
 
                 Orders.Add(order);
@@ -130,7 +130,7 @@ namespace DefinetelyNotATestTask.Controllers
         /// <param name="id">Order's ID</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("Delete")]
+        [Route("Cancel")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         public ActionResult CancelOrder(int id)
@@ -143,5 +143,20 @@ namespace DefinetelyNotATestTask.Controllers
             }
             return new NotFoundResult();
         }
+
+#if DEBUG
+        [HttpDelete]
+        [Route("Delete")]
+        public ActionResult DeleteOrder(int id)
+        {
+            var order = Orders.Where((c) => c.Id == id).FirstOrDefault();
+            if (order != null)
+            {
+                Orders.Remove(order);
+                return new OkResult();
+            }
+            return new NotFoundResult();
+        }
+#endif
     }
 }

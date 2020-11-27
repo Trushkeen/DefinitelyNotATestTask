@@ -52,6 +52,11 @@ namespace DefinetelyNotATestTask.Controllers
         {
             try
             {
+                if (PostMachines.Where((c) => c.Id == model.Id).FirstOrDefault() != null)
+                {
+                    throw new Exception("Same ID already exists");
+                }
+
                 PostMachines.Add(new PostMachine()
                 {
                     Id = model.Id.Value,
