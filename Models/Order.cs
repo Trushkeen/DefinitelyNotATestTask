@@ -20,13 +20,13 @@ namespace DefinetelyNotATestTask.Models
         {
             get
             {
-                return ReceiverPhone;
+                return _receiverPhone;
             }
             set
             {
                 if (Regex.IsMatch(value, @"[+]7\d{3}-\d{3}-\d{2}-\d{2}"))
                 {
-                    ReceiverPhone = value;
+                    _receiverPhone = value;
                 }
                 else
                 {
@@ -34,6 +34,7 @@ namespace DefinetelyNotATestTask.Models
                 }
             }
         }
+        private string _receiverPhone;
         public string ReceiverFullName { get; set; }
 
         

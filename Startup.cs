@@ -41,7 +41,7 @@ namespace DefinetelyNotATestTask
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint($"/swagger/v1/swagger.json", "DefinetelyNotATestTask v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint($"/swagger/v1/swagger.json", "test"));
             }
 
             app.UseHttpsRedirection();

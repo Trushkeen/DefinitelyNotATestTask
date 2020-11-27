@@ -15,7 +15,17 @@ namespace DefinetelyNotATestTask.Controllers
         //using static just for this case
         public static List<Order> Orders = new List<Order>();
 
+        [HttpGet]
+        [Route("GetAll")]
+        public IEnumerable<Order> GetAllOrders()
+        {
+            return Orders;
+        }
+
         [HttpPost]
+        [Route("Create")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
         public StatusCodeResult CreateOrder(OrderVM orderVM)
         {
             try
@@ -43,6 +53,9 @@ namespace DefinetelyNotATestTask.Controllers
         }
 
         [HttpPost]
+        [Route("Edit")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public StatusCodeResult EditOrder(OrderVM editOrderVM)
         {
             var order = Orders.Where((c) => c.Id == editOrderVM.Id).FirstOrDefault();
@@ -55,10 +68,12 @@ namespace DefinetelyNotATestTask.Controllers
                 if (editOrderVM.ReceiverPhone != null) order.ReceiverPhone = editOrderVM.ReceiverPhone;
                 return new OkResult();
             }
-            else return new BadRequestResult();
+            else return new NotFoundResult();
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public ActionResult<Order> GetOrder(int id)
         {
             var order = Orders.Where((c) => c.Id == id).FirstOrDefault();
@@ -70,6 +85,9 @@ namespace DefinetelyNotATestTask.Controllers
         }
 
         [HttpPost]
+        [Route("Delete")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public StatusCodeResult CancelOrder(int id)
         {
             var order = Orders.Where((c) => c.Id == id).FirstOrDefault();
