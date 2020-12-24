@@ -1,4 +1,5 @@
 ﻿using DefinetelyNotATestTask.Models;
+using DefinetelyNotATestTask.Utils;
 using DefinetelyNotATestTask.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,9 +13,12 @@ namespace DefinetelyNotATestTask.Controllers
     [Route("[controller]")]
     public class PostMachinesController
     {
-        //using static just for this case
-        //mutable list used for debugging
-        public static List<PostMachine> PostMachines { get; set; } = new List<PostMachine>();
+        private OrderDbContext db;
+
+        public PostMachinesController(OrderDbContext options)
+        {
+            db = options;
+        }
 
         /// <summary>
         /// Gets all post machines
@@ -24,7 +28,7 @@ namespace DefinetelyNotATestTask.Controllers
         [Route("GetAll")]
         public IEnumerable<PostMachine> GetAllPostMachines()
         {
-            return PostMachines;
+            return db.PostMachines;
         }
 
         /// <summary>
@@ -37,7 +41,7 @@ namespace DefinetelyNotATestTask.Controllers
         [ProducesResponseType(404)]
         public ActionResult<PostMachine> GetPostMachine(int id)
         {
-            var machine = PostMachines.Where((c) => c.Id == id).FirstOrDefault();
+            var machine = db.PostMachines.Where((c) => c.Id == id).FirstOrDefault();
             if (machine == null)
             {
                 return new NotFoundResult();
@@ -45,24 +49,26 @@ namespace DefinetelyNotATestTask.Controllers
             return machine;
         }
 
-#if DEBUG
         [HttpPost]
         [Route("Create")]
-        public ActionResult CreatePostMachine(PostMachineVM model)
+        public async Task<ActionResult> CreatePostMachine(PostMachineVM model)
         {
             try
             {
-                if (PostMachines.Where((c) => c.Id == model.Id).FirstOrDefault() != null)
+                if (db.PostMachines.Where((c) => c.Id == model.Id).FirstOrDefault() != null)
                 {
                     throw new Exception("Same ID already exists");
                 }
 
-                PostMachines.Add(new PostMachine()
+                db.PostMachines.Add(new PostMachine()
                 {
                     Id = model.Id.Value,
                     Address = model.Address,
                     IsWorking = model.IsWorking.Value
                 });
+
+                await db.SaveChangesAsync();
+
                 return new OkResult();
             }
             catch
@@ -73,12 +79,14 @@ namespace DefinetelyNotATestTask.Controllers
 
         [HttpDelete]
         [Route("Remove/{id}")]
-        public ActionResult DeletePostMachine(int id)
+        public async Task<ActionResult> DeletePostMachine(int id)
         {
             try
             {
-                var machine = PostMachines.Where((c) => c.Id == id).FirstOrDefault();
-                PostMachines.Remove(machine);
+                var machine = db.PostMachines.Where((c) => c.Id == id).FirstOrDefault();
+                db.PostMachines.Remove(machine);
+
+                await db.SaveChangesAsync();
             }
             catch
             {
@@ -86,7 +94,5 @@ namespace DefinetelyNotATestTask.Controllers
             }
             return new OkResult();
         }
-#endif
-
     }
 }

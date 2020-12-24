@@ -10,7 +10,7 @@ namespace DefinetelyNotATestTask.ViewModels
     {
         public int Id { get; set; }
         public OrderStatus Status { get; set; }
-        public string[] Content { get; set; }
+        public string Content { get; set; }
         public decimal? Cost { get; set; }
         public int PostMachineId { get; set; }
         public string ReceiverPhone { get; set; }

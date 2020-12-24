@@ -1,4 +1,5 @@
 ﻿using DefinetelyNotATestTask.Models;
+using DefinetelyNotATestTask.Utils;
 using DefinetelyNotATestTask.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,8 +13,12 @@ namespace DefinetelyNotATestTask.Controllers
     [Route("[controller]")]
     public class OrdersController
     {
-        //using static just for this case
-        public static List<Order> Orders { get; set; } = new List<Order>();
+        private OrderDbContext db;
+
+        public OrdersController(OrderDbContext context)
+        {
+            db = context;
+        }
 
         /// <summary>
         /// Get all orders 
@@ -23,7 +28,7 @@ namespace DefinetelyNotATestTask.Controllers
         [Route("GetAll")]
         public IEnumerable<Order> GetAllOrders()
         {
-            return Orders;
+            return db.Orders;
         }
 
         /// <summary>
@@ -37,16 +42,16 @@ namespace DefinetelyNotATestTask.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
         [ProducesResponseType(404)]
-        public ActionResult CreateOrder(OrderVM model)
+        public async Task<ActionResult> CreateOrder(OrderVM model)
         {
             try
             {
-                if (model.Content.Length > 10)
+                if (model.Content.Length > 255)
                 {
                     throw new ArgumentException("Exceeded content's count");
                 }
 
-                if (Orders.Where((c) => c.Id == model.Id).FirstOrDefault() != null)
+                if (db.Orders.Where((c) => c.Id == model.Id).FirstOrDefault() != null)
                 {
                     throw new Exception("Same ID already exists");
                 }
@@ -62,7 +67,7 @@ namespace DefinetelyNotATestTask.Controllers
                     PostMachineId = model.PostMachineId
                 };
 
-                var machine = PostMachinesController.PostMachines.Where((c) => c.Id == order.PostMachineId).FirstOrDefault();
+                var machine = db.PostMachines.Where((c) => c.Id == order.PostMachineId).FirstOrDefault();
                 if (machine == null)
                 {
                     return new NotFoundResult();
@@ -73,7 +78,9 @@ namespace DefinetelyNotATestTask.Controllers
                     throw new Exception("Post machine isn't working now");
                 }
 
-                Orders.Add(order);
+                db.Orders.Add(order);
+
+                await db.SaveChangesAsync();
             }
             catch (Exception)
             {
@@ -91,9 +98,9 @@ namespace DefinetelyNotATestTask.Controllers
         [Route("Edit")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public ActionResult EditOrder(OrderVM model)
+        public async Task<ActionResult> EditOrder(OrderVM model)
         {
-            var order = Orders.Where((c) => c.Id == model.Id).FirstOrDefault();
+            var order = db.Orders.Where((c) => c.Id == model.Id).FirstOrDefault();
             if (order != null)
             {
                 if (model.Status != 0) order.Status = model.Status;
@@ -101,6 +108,7 @@ namespace DefinetelyNotATestTask.Controllers
                 if (model.Cost != null) order.Cost = model.Cost.Value;
                 if (model.ReceiverFullName != null) order.ReceiverFullName = model.ReceiverFullName;
                 if (model.ReceiverPhone != null) order.ReceiverPhone = model.ReceiverPhone;
+                await db.SaveChangesAsync();
                 return new OkResult();
             }
             else return new NotFoundResult();
@@ -116,7 +124,7 @@ namespace DefinetelyNotATestTask.Controllers
         [ProducesResponseType(404)]
         public ActionResult<Order> GetOrder(int id)
         {
-            var order = Orders.Where((c) => c.Id == id).FirstOrDefault();
+            var order = db.Orders.Where((c) => c.Id == id).FirstOrDefault();
             if (order == null)
             {
                 return new NotFoundResult();
@@ -133,30 +141,30 @@ namespace DefinetelyNotATestTask.Controllers
         [Route("Cancel")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public ActionResult CancelOrder(int id)
+        public async Task<ActionResult> CancelOrder(int id)
         {
-            var order = Orders.Where((c) => c.Id == id).FirstOrDefault();
+            var order = db.Orders.Where((c) => c.Id == id).FirstOrDefault();
             if (order != null)
             {
                 order.Status = OrderStatus.Canceled;
+                await db.SaveChangesAsync();
                 return new OkResult();
             }
             return new NotFoundResult();
         }
 
-#if DEBUG
         [HttpDelete]
         [Route("Delete")]
-        public ActionResult DeleteOrder(int id)
+        public async Task<ActionResult> DeleteOrder(int id)
         {
-            var order = Orders.Where((c) => c.Id == id).FirstOrDefault();
+            var order = db.Orders.Where((c) => c.Id == id).FirstOrDefault();
             if (order != null)
             {
-                Orders.Remove(order);
+                db.Orders.Remove(order);
+                await db.SaveChangesAsync();
                 return new OkResult();
             }
             return new NotFoundResult();
         }
-#endif
     }
 }

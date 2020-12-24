@@ -9,11 +9,8 @@ namespace DefinetelyNotATestTask.Models
     public class Order
     {
         public int Id { get; set; }
-
-        //in document with test exercise were said that this field should be immutable, but it shouldn't
         public OrderStatus Status { get; set; }
-
-        public string[] Content { get; set; }
+        public string Content { get; set; }
         public decimal Cost { get; set; }
         public int PostMachineId { get; set; }
         public string ReceiverPhone
